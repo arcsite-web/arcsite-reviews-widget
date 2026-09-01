@@ -16,6 +16,23 @@ and implements the same `ReviewSourceAdapter` interface as every other
 adapter, so wiring up a real integration later is a matter of writing one
 `fetchReviews()` function — nothing else in the app needs to change.
 
+## Source badges
+
+Each review card shows the source's real logo instead of a colored text
+pill, wherever a logo is available. Logos live in
+[`public/logos/`](public/logos) (sourced from ArcSite's Webflow asset
+library) and are wired up per source in
+[`src/lib/sourceMeta.ts`](src/lib/sourceMeta.ts) — a source with no `logo`
+set there just falls back to the colored pill automatically, no code
+changes needed elsewhere.
+
+**GetApp still uses the colored pill.** `public/logos/g2.webp` is sitting
+in the folder but not wired up in `sourceMeta.ts` — it's G2's corporate
+logo, not a GetApp-specific brand mark, so using it for GetApp badges is a
+deliberate call to make rather than a default. Wire it up (or swap in a
+proper GetApp logo) by adding a `logo` entry for `getapp` in
+`sourceMeta.ts`.
+
 ## Capterra / GetApp / Software Advice import
 
 G2 Digital Markets (formerly Gartner Digital Markets — the vendor portal

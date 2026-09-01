@@ -41,6 +41,7 @@ const STYLES = `
   .card-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
   .stars { color: #f5a623; letter-spacing: 1px; font-size: 0.9rem; }
   .source-badge { font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 999px; color: #fff; white-space: nowrap; }
+  .source-logo { height: 22px; width: auto; display: block; }
   .title { font-weight: 600; font-size: 0.95rem; margin: 0; }
   .body { font-size: 0.875rem; line-height: 1.4; color: #444; margin: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
   .footer { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: #777; margin-top: auto; }
@@ -69,14 +70,22 @@ function escapeHtml(value: string): string {
   return div.innerHTML;
 }
 
-function renderReviews(reviews: NormalizedReview[]): string {
+function sourceBadgeHtml(review: NormalizedReview, apiBase: string): string {
+  const meta = SOURCE_META[review.source];
+  if (meta.logo) {
+    const logoUrl = new URL(meta.logo, apiBase).toString();
+    return `<img class="source-logo" src="${escapeHtml(logoUrl)}" alt="${escapeHtml(meta.label)}" />`;
+  }
+  return `<span class="source-badge" style="background:${meta.color}">${escapeHtml(meta.label)}</span>`;
+}
+
+function renderReviews(reviews: NormalizedReview[], apiBase: string): string {
   if (reviews.length === 0) {
     return `<p class="empty">No reviews to show yet.</p>`;
   }
 
   const cards = reviews
     .map((review) => {
-      const meta = SOURCE_META[review.source];
       const titleHtml = review.title
         ? `<p class="title">${escapeHtml(review.title)}</p>`
         : "";
@@ -87,7 +96,7 @@ function renderReviews(reviews: NormalizedReview[]): string {
         <article class="card">
           <div class="card-header">
             <span class="stars" aria-label="${review.rating} out of 5 stars">${stars(review.rating)}</span>
-            <span class="source-badge" style="background:${meta.color}">${escapeHtml(meta.label)}</span>
+            ${sourceBadgeHtml(review, apiBase)}
           </div>
           ${titleHtml}
           <p class="body">${escapeHtml(review.body)}</p>
@@ -130,7 +139,7 @@ async function renderInto(container: HTMLElement, options: WidgetOptions) {
 
   try {
     const { reviews } = await fetchData(options);
-    root.innerHTML = `<style>${STYLES}</style>${renderReviews(reviews)}`;
+    root.innerHTML = `<style>${STYLES}</style>${renderReviews(reviews, options.apiBase)}`;
   } catch (err) {
     console.error("[ArcSiteReviews] failed to load reviews", err);
     root.innerHTML = `<style>${STYLES}</style><p class="error">Couldn't load reviews right now.</p>`;

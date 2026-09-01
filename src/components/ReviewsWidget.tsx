@@ -22,6 +22,19 @@ function formatDate(iso: string) {
   });
 }
 
+function SourceBadge({ source }: { source: NormalizedReview["source"] }) {
+  const meta = SOURCE_META[source];
+  if (meta.logo) {
+    // eslint-disable-next-line @next/next/no-img-element -- fixed-size brand logo, not a page image
+    return <img className={styles.sourceLogo} src={meta.logo} alt={meta.label} />;
+  }
+  return (
+    <span className={styles.sourceBadge} style={{ background: meta.color }}>
+      {meta.label}
+    </span>
+  );
+}
+
 export function ReviewsWidget({ reviews }: { reviews: NormalizedReview[] }) {
   if (reviews.length === 0) {
     return <p className={styles.empty}>No reviews to show yet.</p>;
@@ -30,17 +43,11 @@ export function ReviewsWidget({ reviews }: { reviews: NormalizedReview[] }) {
   return (
     <div className={styles.widget}>
       {reviews.map((review) => {
-        const meta = SOURCE_META[review.source];
         return (
           <article key={review.id} className={styles.card}>
             <div className={styles.cardHeader}>
               <Stars rating={review.rating} />
-              <span
-                className={styles.sourceBadge}
-                style={{ background: meta.color }}
-              >
-                {meta.label}
-              </span>
+              <SourceBadge source={review.source} />
             </div>
             {review.title && <p className={styles.title}>{review.title}</p>}
             <p className={styles.body}>{review.body}</p>
