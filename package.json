@@ -1,0 +1,27 @@
+{
+  "name": "arcsite-reviews-widget",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run build:widget && next dev",
+    "build": "npm run build:widget && next build",
+    "build:widget": "esbuild src/widget-embed/index.ts --bundle --minify --outfile=public/widget.js --format=iife --target=es2018",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "csv-parse": "^7.0.2",
+    "next": "16.3.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "esbuild": "^0.28.2",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.4",
+    "typescript": "^5"
+  }
+}
